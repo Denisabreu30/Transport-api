@@ -1,11 +1,12 @@
-class ContactsController < ApplicationController
+class Api::V1::ContactsController < ApplicationController
   before_action :set_contact, only: [:show, :update, :destroy]
 
   # GET /contacts
   def index
     @contacts = Contact.all
 
-    render json: @contacts
+    render json: @contacts,include: [
+      {customer: {except: [:created_at, :updated_at]}}]
   end
 
   # GET /contacts/1
@@ -18,7 +19,7 @@ class ContactsController < ApplicationController
     @contact = Contact.new(contact_params)
 
     if @contact.save
-      render json: @contact, status: :created, location: @contact
+      render json: @contact, status: :created, location: api_v1_contact_url(@contact)
     else
       render json: @contact.errors, status: :unprocessable_entity
     end
